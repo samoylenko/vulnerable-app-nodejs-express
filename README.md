@@ -17,7 +17,6 @@ This project uses:
 | Vulnerability Type                     | Description                                                                                                                                                                      | Location                                                                      | PoC Command                                                                                                                                                                                                         |
 |----------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | Cross Site Scripting (XSS)             | The `/user` endpoint reflects a value from the database directly to the page. Today, it's an ID, but in non statically typed languages this is still always a scenario.          | `res.send(user.rows[0]);`                                                     | This one currently doesn't have a PoC exploit, since it reflects a number from the database to the page. But this is a legit injection scenario that has to be handled. We use it SAST issue prioritization testing |
-| Hardcoded credentials                  | There are secrets in the code committed to the repository                                                                                                                        | `POSTGRES_PASSWORD=mysecretpassword`<br/><br/>`password: "mysecretpassword",` | N/A                                                                                                                                                                                                                 |
 
 ### Other issues
 
@@ -46,5 +45,5 @@ npm i
 docker run --name some-postgres -e POSTGRES_PASSWORD=mysecretpassword -p 5432:5432 -d postgres
 
 # Start the application
-npm run start
+PGUSER=postgres PGPASSWORD=mysecretpassword PGDATABASE=postgres npm run start
 ```
