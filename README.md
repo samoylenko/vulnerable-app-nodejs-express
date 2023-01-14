@@ -14,9 +14,9 @@ This project uses:
 
 ## Security issues
 
-| Vulnerability Type                     | Description                                                                                                                                                                      | Location                                                                      | PoC Command                                                                                                                                                                                                         |
-|----------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Cross Site Scripting (XSS)             | The `/user` endpoint reflects a value from the database directly to the page. Today, it's an ID, but in non statically typed languages this is still always a scenario.          | `res.send(user.rows[0]);`                                                     | This one currently doesn't have a PoC exploit, since it reflects a number from the database to the page. But this is a legit injection scenario that has to be handled. We use it SAST issue prioritization testing |
+| Vulnerability Type | Description | Location | PoC Command |
+|--------------------|-------------|----------|-------------|
+| --                 | --          | --       | --          |
 
 ### Other issues
 

@@ -38,7 +38,9 @@ const main = async () => {
       const user = await client.query(`select *
                                        from users
                                        where id = $1`, [req.params.id])
-      res.send(user.rows[0])
+      res
+        .set('Content-Type', 'text/plain')
+        .send(user.rows[0])
     } catch (e) {
       console.error(e.message)
       res.send({ 'error': e.message })
