@@ -33,6 +33,7 @@ This project uses:
 * Library `lodash` is declared but never used
 * Style is inconsistent. E.g. a [Standard Style](https://standardjs.com/) linter
   would complain.
+* Plus container issues if you run `docker build .`
 
 ## Running this code
 
