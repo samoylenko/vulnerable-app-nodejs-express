@@ -1,9 +1,8 @@
 FROM node:16
 
-WORKDIR /app
+COPY . /app/
 
-COPY index.js /app/index.js
-COPY package.json /app/package.json
+WORKDIR /app
 
 RUN npm i --package-lock
 
