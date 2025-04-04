@@ -129,3 +129,15 @@ docker run --name some-postgres -e POSTGRES_PASSWORD=mysecretpassword -p 5432:54
 # Start the vulnerable container
 docker run --network host --rm samoylenko/vulnerable
 ----
+
+In order to successfully run a `fixed` version of the container, secrets need to be injected into the container, for example:
+
+[source,shell]
+----
+docker run \
+  -e PGUSER=postgres \
+  -e PGDATABASE=postgres \
+  -e PGPASSWORD=mysecretpassword \
+  --network=host --rm \
+  samoylenko/vulnerable:fixed
+----
