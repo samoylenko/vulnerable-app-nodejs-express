@@ -1,0 +1,131 @@
+= A sample application with known vulnerabilities - JavaScript, Express
+
+A sample application with known issues for testing various linters, scanners, and scan automation.
+
+There are two branches in this repository:
+
+[cols="1,3"]
+|===
+| Branch name | Description
+
+| `vulnerable` (default)
+| This branch is the default, containing all sorts of basic vulnerabilities split into different commits, which is useful for scanner automation testing.
+
+The corresponding container image: `samoylenko/vulnerable:vulnerable` (also tagged as `latest` for convenience)
+
+| `fixed`
+| This branch contains vulnerability fixes and is split into different commits to allow for thorough scanner automation and resolution logic testing.
+
+The corresponding container image: `samoylenko/vulnerable:fixed`
+|===
+
+== Details
+
+This project uses:
+
+[cols="1,3"]
+|===
+| Component | In Use
+
+| Platform
+| https://nodejs.org/[NodeJS]
+
+| Language(s)
+| JavaScript (https://www.ecma-international.org/publications-and-standards/standards/[ECMAScript])
+
+| Build
+| https://www.npmjs.com/[npm]
+
+| Framework
+| https://expressjs.com/[Express]
+|===
+
+=== Security issues
+
+Purposively added security issues:
+
+|===
+| Vulnerability Type | Description | Location | PoC
+
+| Cross Site Scripting (XSS)
+| The `/hello` endpoint generates page output in code. It expects a name as a parameter to say `"Hello, $name"` and concatenates the user input to the output without escaping it.
+| `res.send(`Hello, ${req.query.name}`)`
+| http://localhost:8080/hello?name=%3Cscript%3Ealert(1)%3C/script%3E
+
+| Cross Site Scripting (XSS)
+| The `/view` endpoint uses a template engine to say `"Hello, $name"` and misuses template syntax, leaving the user input unescaped.
+| `p!= 'Hello, ' + name`
+| http://localhost:8080/view?name=%3Cscript%3Ealert(1)%3C/script%3E
+
+| Cross Site Scripting (XSS)
+| The `/user` endpoint reflects a value from the database directly to the page. Today, it's an ID, but in non statically typed languages this is still always a scenario.
+| `res.send(user.rows[0]);`
+| This one doesn’t have a PoC exploit since it reflects a number from the database to the page. But this is a legit injection scenario that has to be handled. We use it for SAST issue prioritization testing.
+
+| Hardcoded credentials
+| There are secrets in the code committed to the repository.
+| `POSTGRES_PASSWORD=mysecretpassword`
+
+`password: "mysecretpassword"`
+| N/A
+
+| SQL Injection (SQLi)
+| The SQL query is constructed using string concatenation instead of using a parameterized query.
+| `client.query(`select * from users where id = ${req.params.id}`)`
+| http://localhost:8080/user/1;drop%20table%20users
+
+`sqlmap -u localhost:8080/user/1 --all`
+
+| Use of a vulnerable (outdated) library |This project includes`lodash` library version with known vulnerabilities.
+| `"lodash": "4.17.20"`
+| https://www.cvedetails.com/cve/CVE-2021-23337/[CVE-2021-23337], https://www.cvedetails.com/cve/CVE-2020-28500/[CVE-2020-28500], etc...
+|===
+
+=== Other issues
+
+* There is at least one unused variable
+* The project has no tests
+* The project dependencies are not locked
+* A few `var` instead of `const` (https://eslint.org/docs/rules/no-var[ESlint rule: `no-var`])
+* Library `lodash` is declared but never used
+* Style is inconsistent.
+E.g. a https://standardjs.com/[Standard Style] linter would complain.
+* Additionally, a large list of base container CVEs in the container image created from `vulnerable` branch
+
+== Building running the project
+
+CAUTION: This project contains security vulnerabilities and should never be run in production environments.
+
+Requirements:
+
+* https://docs.npmjs.com/downloading-and-installing-node-js-and-npm[NodeJS and npm]
+* https://www.docker.com/[Docker]
+
+Local project execution:
+
+[source,shell]
+----
+# Clone the project
+git clone https://github.com/samoylenko/vulnerable-app-nodejs-express.git
+cd vulnerable-app-nodejs-express
+
+# Install dependencies
+npm i
+
+# Start the database container
+docker run --name some-postgres -e POSTGRES_PASSWORD=mysecretpassword -p 5432:5432 -d postgres
+
+# Start the application
+npm run start
+----
+
+Container execution:
+
+[source,shell]
+----
+# Start Postgres first
+docker run --name some-postgres -e POSTGRES_PASSWORD=mysecretpassword -p 5432:5432 -d postgres
+
+# Start the vulnerable container
+docker run --network host --rm samoylenko/vulnerable
+----
