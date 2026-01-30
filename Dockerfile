@@ -4,7 +4,7 @@ COPY . /app/
 
 WORKDIR /app
 
-RUN npm i --package-lock
+RUN npm install --package-lock --user root
 
 EXPOSE 8080
 

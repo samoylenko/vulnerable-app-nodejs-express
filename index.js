@@ -43,7 +43,7 @@ var main = async () => {
     try {
       var user = await client.query(`select *
                                      from users
-                                     where id = ${req.params.id}`)
+                                     where id = $1`, [req.params.id]);
       res.send(user.rows[0]);
     } catch (e) {
       console.error(e.message)
