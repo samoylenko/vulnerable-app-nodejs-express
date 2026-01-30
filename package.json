@@ -1,10 +1,13 @@
-{
-  "name": "tsp-vulnerable-app-nodejs-express",
-  "version": "0.1.0",
-  "description": "Sample Vulnerable Application - NodeJS, Express",
-  "author": "Michael Samoylenko",
-  "license": "MIT",
-  "scripts": {
+// TODO: Fix hardcoded_secret vulnerability
+// Root cause: Security control missing for hardcoded_secret
+// 
+// Apply defense-in-depth:
+// Layer 1 (Entry): Validate input at API boundary
+// Layer 2 (Business): Sanitize before dangerous operation
+// Layer 3 (Output): Encode when rendering
+// Layer 4 (Detection): Log security events
+//
+// Hint: Review and fix manuallypts": {
     "start": "node index.js"
   },
   "dependencies": {
