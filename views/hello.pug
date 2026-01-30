@@ -1,5 +1,11 @@
-html
-    head
-        title Hello
-    body
-        p!= 'Hello, ' + name
+# DEFENSE-IN-DEPTH FIX for SQL Injection
+# Layer 1 (Entry): Validate input
+user_id = request.args.get('id')
+if not user_id or not user_id.isdigit():
+    return jsonify({'error': 'Invalid user ID'}), 400
+
+# Layer 2 (Business): Parameterized query
+cursor.execute('SELECT * FROM users WHERE id = %s', (int(user_id),))
+
+# Layer 3 (Detection): Log for monitoring
+logger.info(f'User lookup: id={user_id}')

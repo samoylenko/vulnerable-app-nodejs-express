@@ -1,14 +1,18 @@
-var { Client } = require('pg')
-var express = require("express");
+// DEFENSE-IN-DEPTH FIX for SQL Injection
+// Layer 1 (Entry): Validate input type and format
+const userId = parseInt(req.params.id, 10);
+if (isNaN(userId) || userId < 0) {
+    return res.status(400).json({ error: 'Invalid user ID' });
+}
 
-var port = 8080;
+// Layer 2 (Business): Use parameterized query
+const result = await client.query(
+    'SELECT * FROM users WHERE id = $1',
+    [userId]
+);
 
-var client = new Client({
-  user: "postgres",
-  password: "mysecretpassword",
-  host: "localhost",
-  port: 5432,
-  database: "postgres",
+// Layer 3 (Output): Return only necessary fields
+res.json({ id: result.rows[0]?.id, name: result.rows[0]?.name });atabase: "postgres",
 })
 client.connect()
 
