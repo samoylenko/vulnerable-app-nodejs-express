@@ -1,11 +1,13 @@
-FROM node:16
-
-COPY . /app/
+# Fixed Dockerfile with HEALTHCHECK instruction
+FROM python:3.8-slim
 
 WORKDIR /app
 
-RUN npm i --package-lock
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
 
-EXPOSE 8080
+COPY . .
 
-CMD [ "npm", "start" ]
+HEALTHCHECK CMD ["/bin/bash", "-c", "curl -f http://localhost:5000/ || exit 1"]
+
+CMD ["python", "app.py"]
